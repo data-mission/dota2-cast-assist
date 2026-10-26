@@ -17,9 +17,9 @@
   <h3 align="center">Dota2-Cast-Assist</h3>
 
   <p align="center">
-    Fully deployed service with no need to code or run anything locally
+    Real-time Dota 2 telemetry, enrichment, and match statistics
   <p align="center">
-    Connects you directly to Dota 2 GSI from your browser, offering real-time stats and Steam API integration with minimal setup
+    Processes Dota 2 game-state events and Steam API data into match statistics
     <br />
     <br />
     <a href="https://github.com/data-mission/dota2-cast-assist/issues/new?labels=bug&template=bug-report.md">Report Bug</a>
@@ -28,6 +28,21 @@
   </p>
 </div>
 
+
+## Engineering overview
+
+An end-to-end live match analytics system for Dota 2 spectators and broadcasters. It ingests Game State Integration events through FastAPI, processes streams with Pub/Sub and Apache Beam / Dataflow, enriches match data from the Steam API, and stores the latest per-spectator state in Firestore for the statistics API. The repository also includes Docker and Kubernetes / GKE deployment configuration.
+
+![Service architecture: game-state ingestion, processing, and match-statistics API](images/system_design.png)
+
+- **Implementation:** [API and application](app/), [event processing](events_processor/), and [match-data collection](live_matches_crawler/).
+- **Deployment configuration:** [Dockerfile](Dockerfile), [Docker Compose](docker-compose.yml), and [Kubernetes manifests](k8s/).
+- **Inspect the output:** [example match-statistics JSON](app/templates/example_stats.json).
+- **Inspect the checks:** [tests](tests/) and [tox configuration](tox.ini).
+
+The setup below describes the original hosted integration. Repository code, configuration, and example output can be inspected independently of that endpoint. The developer setup guide is still marked as work in progress.
+
+Maintained by [Vlad Ryzhkov](https://github.com/data-mission).
 
 ## About
 
@@ -61,7 +76,7 @@ through a REST API. By specifying a unique token, the service generates a
 dedicated page displaying aggregated game stats for easy access in a browser.
 
 ## Usage
-It’s never been easier as no installations or cloning needed.
+The following steps configure a spectator client to send events to the hosted endpoint used by this integration.
 
 All it takes is a quick setup with a text file, and you only need to do it 
 once on the PC or laptop where you usually watch Dota 2 matches.
